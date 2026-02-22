@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# --- Restore credentials ---
+# On Linux (in container), Claude Code stores credentials in a file via node keytar/secret-service.
+# We inject them from macOS Keychain via the CLAUDE_CREDENTIALS env var.
+if [ -n "$CLAUDE_CREDENTIALS" ]; then
+  mkdir -p "$HOME/.claude"
+  echo "$CLAUDE_CREDENTIALS" > "$HOME/.claude/.credentials.json"
+  unset CLAUDE_CREDENTIALS
+fi
+
 # --- Firewall: default-deny outbound, whitelist specific domains ---
 
 ALLOWED_DOMAINS=(
